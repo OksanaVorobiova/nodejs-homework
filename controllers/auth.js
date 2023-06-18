@@ -98,21 +98,28 @@ const changeSubscription = async (req, res, next) => {
 };
 
 const changeAvatar = async (req, res, next) => {
+  if (!req.file) {
+    throw HttpError(400, "avatar is required");
+  }
+
   const { originalname, path: tempDir } = req.file;
   const { _id } = req.user;
 
   const oldDir = tempDir;
   const newDir = path.resolve("public", "avatars", originalname);
 
-  Jimp.read(oldDir, (err, file) => {
+  const avatar = await Jimp.read(oldDir);
+  await avatar.resize(250, 250).write(oldDir);
+
+  /* Jimp.read(oldDir, (err, file) => {
     if (err) throw err;
 
     file.resize(250, 250);
-  });
+  }); */
 
   await fs.rename(oldDir, newDir);
 
-  const avatarURL = path.join("public", "avatars", originalname);
+  const avatarURL = path.join("avatars", originalname);
 
   await User.findByIdAndUpdate(_id, { avatarURL });
 
