@@ -1,8 +1,13 @@
 const express = require("express");
-const { authSchema, subscrUpdateSchema } = require("../../models/user");
+const {
+  authSchema,
+  subscrUpdateSchema,
+  userEmailSchema,
+} = require("../../models/user");
 const {
   authValidation,
   userSubscrUpdate,
+  postValidation,
 } = require("../../middlwares/bodyValidation");
 const authCtrl = require("../../controllers/auth");
 const inspectToken = require("../../middlwares/inspectToken");
@@ -17,6 +22,10 @@ router.post("/login", authValidation(authSchema), authCtrl.login);
 router.post("/logout", inspectToken, authCtrl.logout);
 
 router.get("/current", inspectToken, authCtrl.getCurrent);
+
+router.get("/verify/:verificationToken", authCtrl.verifyEmail);
+
+router.post("/verify", postValidation(userEmailSchema), authCtrl.resendVerify);
 
 router.patch(
   "/",
