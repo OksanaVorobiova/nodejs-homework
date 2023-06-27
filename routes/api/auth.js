@@ -7,7 +7,6 @@ const {
 const {
   authValidation,
   userSubscrUpdate,
-  postValidation,
 } = require("../../middlwares/bodyValidation");
 const authCtrl = require("../../controllers/auth");
 const inspectToken = require("../../middlwares/inspectToken");
@@ -25,7 +24,7 @@ router.get("/current", inspectToken, authCtrl.getCurrent);
 
 router.get("/verify/:verificationToken", authCtrl.verifyEmail);
 
-router.post("/verify", postValidation(userEmailSchema), authCtrl.resendVerify);
+router.post("/verify", authValidation(userEmailSchema), authCtrl.resendVerify);
 
 router.patch(
   "/",
